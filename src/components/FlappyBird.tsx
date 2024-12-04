@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 const GRAVITY = 0.8;
-const JUMP_FORCE = -12;
+const JUMP_FORCE = -10;
 const PIPE_SPEED = 3;
 const PIPE_SPACING = 200;
 const PIPE_WIDTH = 80;
@@ -59,72 +59,81 @@ export const FlappyBird = () => {
 
   useEffect(() => {
     if (gameStarted && !gameOver) {
-      const createPipe = () => {
+      // Criar o primeiro conjunto de canos imediatamente
+      if (pipes.length === 0) {
         const height = Math.random() * 300 + 100;
-        setPipes(pipes => [...pipes, { x: 800, height, passed: false }]);
+        setPipes([{ x: 800, height, passed: false }]);
+      }
+
+      const gameLoop = () => {
+        setBirdPosition((pos) => {
+          const newPos = pos + birdVelocity;
+          if (newPos > 600 || newPos < 0) {
+            setGameOver(true);
+            return pos;
+          }
+          return newPos;
+        });
+
+        setBirdVelocity(v => v + GRAVITY);
+
+        setPipes(currentPipes => {
+          // Criar novo cano quando o último cano passar da metade da tela
+          const lastPipe = currentPipes[currentPipes.length - 1];
+          if (lastPipe && lastPipe.x < 400 && currentPipes.length < 3) {
+            const height = Math.random() * 300 + 100;
+            return [...currentPipes, { x: 800, height, passed: false }];
+          }
+          return currentPipes;
+        });
+
+        setPipes(currentPipes => {
+          return currentPipes
+            .map(pipe => ({
+              ...pipe,
+              x: pipe.x - PIPE_SPEED,
+            }))
+            .filter(pipe => pipe.x > -PIPE_WIDTH);
+        });
+
+        // Verificar colisões
+        const bird = {
+          left: 100,
+          right: 150,
+          top: birdPosition,
+          bottom: birdPosition + 40,
+        };
+
+        pipes.forEach(pipe => {
+          if (
+            bird.right > pipe.x &&
+            bird.left < pipe.x + PIPE_WIDTH &&
+            (bird.top < pipe.height || bird.bottom > pipe.height + PIPE_SPACING)
+          ) {
+            setGameOver(true);
+          }
+
+          if (!pipe.passed && bird.left > pipe.x + PIPE_WIDTH) {
+            setScore(s => s + 1);
+            pipe.passed = true;
+          }
+        });
       };
 
-      gameRef.current = requestAnimationFrame(updateGame);
-      pipeRef.current = window.setInterval(createPipe, 3000);
+      gameRef.current = requestAnimationFrame(function animate() {
+        gameLoop();
+        if (!gameOver) {
+          gameRef.current = requestAnimationFrame(animate);
+        }
+      });
 
       return () => {
-        if (gameRef.current) cancelAnimationFrame(gameRef.current);
-        if (pipeRef.current) clearInterval(pipeRef.current);
+        if (gameRef.current) {
+          cancelAnimationFrame(gameRef.current);
+        }
       };
     }
-  }, [gameStarted, gameOver]);
-
-  const updateGame = () => {
-    setBirdPosition(pos => {
-      const newPos = pos + birdVelocity;
-      if (newPos > 600 || newPos < 0) {
-        setGameOver(true);
-        return pos;
-      }
-      return newPos;
-    });
-
-    setBirdVelocity(v => v + GRAVITY);
-
-    setPipes(pipes => {
-      return pipes
-        .map(pipe => ({
-          ...pipe,
-          x: pipe.x - PIPE_SPEED,
-        }))
-        .filter(pipe => pipe.x > -PIPE_WIDTH);
-    });
-
-    checkCollision();
-
-    if (!gameOver) {
-      gameRef.current = requestAnimationFrame(updateGame);
-    }
-  };
-
-  const checkCollision = () => {
-    const bird = {
-      left: 100,
-      right: 150,
-      top: birdPosition,
-      bottom: birdPosition + 40,
-    };
-
-    pipes.forEach(pipe => {
-      if (
-        bird.right > pipe.x &&
-        bird.left < pipe.x + PIPE_WIDTH &&
-        (bird.top < pipe.height || bird.bottom > pipe.height + PIPE_SPACING)
-      ) {
-        setGameOver(true);
-      }
-
-      if (!pipe.passed && bird.left > pipe.x + PIPE_WIDTH) {
-        setScore(s => s + 1);
-        pipe.passed = true;
-      }
-    });
-  };
+  }, [gameStarted, gameOver, birdVelocity, pipes]);
 
   return (
     <div 
