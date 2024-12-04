@@ -1,45 +1,48 @@
-import type { Config } from "tailwindcss";
+import { type Config } from "tailwindcss";
 
-export default {
+const config = {
   darkMode: ["class"],
   content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
+    './pages/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
   ],
   prefix: "",
   theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
     extend: {
       colors: {
-        'autism-blue': '#A1CFFF',
-        'autism-purple': '#B19CD9',
-        'autism-green': '#77DD77',
-        'autism-pink': '#FFB3BA',
-        'autism-orange': '#FFB366',
-        'game-bg': '#E6F3FF',
-      },
-      animation: {
-        'float': 'float 2s ease-in-out infinite',
-        'fly': 'fly 0.6s ease-in-out',
-        'slide': 'slide 2.5s linear infinite',
+        'autism-blue': '#4A90E2',
+        'autism-purple': '#9B51E0',
+        'autism-green': '#27AE60',
+        'autism-orange': '#F2994A',
+        'autism-pink': '#EB5757',
+        'game-bg': '#87CEEB', // Cor de fundo do céu
       },
       keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' },
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
-        fly: {
-          '0%': { transform: 'rotate(-10deg)' },
-          '50%': { transform: 'rotate(10deg)' },
-          '100%': { transform: 'rotate(-10deg)' },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
-        slide: {
-          '0%': { transform: 'translateX(100%)' },
-          '100%': { transform: 'translateX(-100%)' },
-        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config;
+} satisfies Config
+
+export default config;

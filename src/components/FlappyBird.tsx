@@ -27,7 +27,9 @@ export const FlappyBird = () => {
     if (!gameStarted) {
       setGameStarted(true);
     }
-    setBirdVelocity(JUMP_FORCE);
+    if (!gameOver) {
+      setBirdVelocity(JUMP_FORCE);
+    }
   };
 
   const resetGame = () => {
@@ -57,19 +59,20 @@ export const FlappyBird = () => {
 
   useEffect(() => {
     if (gameStarted && !gameOver) {
+      const createPipe = () => {
+        const height = Math.random() * 300 + 100;
+        setPipes(pipes => [...pipes, { x: 800, height, passed: false }]);
+      };
+
       gameRef.current = requestAnimationFrame(updateGame);
       pipeRef.current = window.setInterval(createPipe, 3000);
-    }
-    return () => {
-      if (gameRef.current) cancelAnimationFrame(gameRef.current);
-      if (pipeRef.current) clearInterval(pipeRef.current);
-    };
-  }, [gameStarted, gameOver]);
 
-  const createPipe = () => {
-    const height = Math.random() * 300 + 100;
-    setPipes(pipes => [...pipes, { x: 800, height, passed: false }]);
-  };
+      return () => {
+        if (gameRef.current) cancelAnimationFrame(gameRef.current);
+        if (pipeRef.current) clearInterval(pipeRef.current);
+      };
+    }
+  }, [gameStarted, gameOver]);
 
   const updateGame = () => {
     setBirdPosition(pos => {
@@ -140,7 +143,7 @@ export const FlappyBird = () => {
         className="absolute w-12 h-12 left-24 bg-autism-orange rounded-full"
         style={{
           top: birdPosition,
-          transition: 'transform 0.1s',
+          transition: 'none',
         }}
         animate={{ rotate: birdVelocity * 2 }}
       >
