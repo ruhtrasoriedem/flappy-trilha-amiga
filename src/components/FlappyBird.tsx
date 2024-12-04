@@ -84,10 +84,12 @@ export const FlappyBird = () => {
     setBirdVelocity(v => v + GRAVITY);
 
     setPipes(pipes => {
-      return pipes.map(pipe => ({
-        ...pipe,
-        x: pipe.x - PIPE_SPEED,
-      })).filter(pipe => pipe.x > -PIPE_WIDTH);
+      return pipes
+        .map(pipe => ({
+          ...pipe,
+          x: pipe.x - PIPE_SPEED,
+        }))
+        .filter(pipe => pipe.x > -PIPE_WIDTH);
     });
 
     checkCollision();
@@ -123,7 +125,7 @@ export const FlappyBird = () => {
 
   return (
     <div 
-      className="relative w-[800px] h-[600px] bg-game-bg overflow-hidden cursor-pointer"
+      className="relative w-[800px] h-[600px] bg-game-bg overflow-hidden cursor-pointer border-4 border-autism-purple rounded-lg shadow-lg"
       onClick={gameOver ? resetGame : jump}
     >
       {/* Marca d'água */}
@@ -142,25 +144,23 @@ export const FlappyBird = () => {
         }}
         animate={{ rotate: birdVelocity * 2 }}
       >
-        <div className="absolute w-4 h-4 right-0 top-4 bg-autism-pink rounded-full" /> {/* Olho */}
-        <div className="absolute w-6 h-4 right-[-8px] top-5 bg-autism-pink rounded-tr-full" /> {/* Bico */}
+        <div className="absolute w-4 h-4 right-0 top-4 bg-autism-pink rounded-full" />
+        <div className="absolute w-6 h-4 right-[-8px] top-5 bg-autism-pink rounded-tr-full" />
       </motion.div>
 
       {/* Canos */}
       {pipes.map((pipe, index) => (
         <div key={index}>
-          {/* Cano superior */}
           <div
-            className="absolute w-20 bg-autism-green"
+            className="absolute w-20 bg-autism-green rounded-b-lg"
             style={{
               left: pipe.x,
               height: pipe.height,
               top: 0,
             }}
           />
-          {/* Cano inferior */}
           <div
-            className="absolute w-20 bg-autism-green"
+            className="absolute w-20 bg-autism-green rounded-t-lg"
             style={{
               left: pipe.x,
               top: pipe.height + PIPE_SPACING,
@@ -178,17 +178,17 @@ export const FlappyBird = () => {
       {/* Tela inicial */}
       {!gameStarted && !gameOver && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white">
-          <h1 className="text-4xl mb-4">Flappy Bird</h1>
-          <p>Pressione espaço ou clique para começar</p>
+          <h1 className="text-4xl mb-4 font-bold">Flappy Bird</h1>
+          <p className="text-xl">Pressione espaço ou clique para começar</p>
         </div>
       )}
 
       {/* Tela de game over */}
       {gameOver && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white">
-          <h1 className="text-4xl mb-4">Game Over</h1>
+          <h1 className="text-4xl mb-4 font-bold">Game Over</h1>
           <p className="text-2xl mb-4">Pontuação: {score}</p>
-          <p>Pressione espaço ou clique para jogar novamente</p>
+          <p className="text-xl">Pressione espaço ou clique para jogar novamente</p>
         </div>
       )}
     </div>
