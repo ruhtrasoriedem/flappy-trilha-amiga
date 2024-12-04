@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const GRAVITY = 0.8;
 const JUMP_FORCE = -12;
@@ -10,7 +10,7 @@ const PIPE_WIDTH = 80;
 interface Pipe {
   x: number;
   height: number;
-  passed?: boolean;
+  passed: boolean;
 }
 
 export const FlappyBird = () => {
@@ -68,7 +68,7 @@ export const FlappyBird = () => {
 
   const createPipe = () => {
     const height = Math.random() * 300 + 100;
-    setPipes(pipes => [...pipes, { x: 800, height }]);
+    setPipes(pipes => [...pipes, { x: 800, height, passed: false }]);
   };
 
   const updateGame = () => {
@@ -114,7 +114,7 @@ export const FlappyBird = () => {
         setGameOver(true);
       }
 
-      if (bird.left > pipe.x + PIPE_WIDTH && !pipe.passed) {
+      if (!pipe.passed && bird.left > pipe.x + PIPE_WIDTH) {
         setScore(s => s + 1);
         pipe.passed = true;
       }
@@ -139,7 +139,6 @@ export const FlappyBird = () => {
         style={{
           top: birdPosition,
           transition: 'transform 0.1s',
-          transform: `rotate(${birdVelocity * 2}deg)`,
         }}
         animate={{ rotate: birdVelocity * 2 }}
       >
@@ -171,7 +170,7 @@ export const FlappyBird = () => {
         </div>
       ))}
 
-      {/* Interface */}
+      {/* Pontuação */}
       <div className="absolute top-4 left-4 text-4xl font-bold text-autism-purple">
         {score}
       </div>
