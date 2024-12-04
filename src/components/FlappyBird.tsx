@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
-const GRAVITY = 1;
+const GRAVITY = 0.6;
 const JUMP_FORCE = -10;
 const PIPE_SPEED = 3;
 const PIPE_SPACING = 200;
