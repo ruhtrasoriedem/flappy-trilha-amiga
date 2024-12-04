@@ -7,13 +7,19 @@ const PIPE_SPEED = 3;
 const PIPE_SPACING = 200;
 const PIPE_WIDTH = 80;
 
+interface Pipe {
+  x: number;
+  height: number;
+  passed?: boolean;
+}
+
 export const FlappyBird = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [birdPosition, setBirdPosition] = useState(300);
   const [birdVelocity, setBirdVelocity] = useState(0);
-  const [pipes, setPipes] = useState<{x: number; height: number}[]>([]);
+  const [pipes, setPipes] = useState<Pipe[]>([]);
   const gameRef = useRef<number>();
   const pipeRef = useRef<number>();
 
