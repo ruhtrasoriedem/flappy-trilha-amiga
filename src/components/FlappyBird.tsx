@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { Bird } from './Bird';
+import { Pipe } from './Pipe';
 
 const GRAVITY = 0.6;
 const JUMP_FORCE = -10;
@@ -7,7 +8,7 @@ const PIPE_SPEED = 3;
 const PIPE_SPACING = 200;
 const PIPE_WIDTH = 80;
 
-interface Pipe {
+interface PipeData {
   x: number;
   height: number;
   passed: boolean;
@@ -19,9 +20,8 @@ export const FlappyBird = () => {
   const [score, setScore] = useState(0);
   const [birdPosition, setBirdPosition] = useState(300);
   const [birdVelocity, setBirdVelocity] = useState(0);
-  const [pipes, setPipes] = useState<Pipe[]>([]);
+  const [pipes, setPipes] = useState<PipeData[]>([]);
   const gameRef = useRef<number>();
-  const pipeRef = useRef<number>();
 
   const jump = () => {
     if (!gameStarted) {
@@ -59,7 +59,6 @@ export const FlappyBird = () => {
 
   useEffect(() => {
     if (gameStarted && !gameOver) {
-      // Criar o primeiro conjunto de canos imediatamente
       if (pipes.length === 0) {
         const height = Math.random() * 300 + 100;
         setPipes([{ x: 800, height, passed: false }]);
@@ -78,9 +77,7 @@ export const FlappyBird = () => {
         setBirdVelocity(v => v + GRAVITY);
 
         setPipes(currentPipes => {
-          // Criar novo cano quando o último cano passar da metade da tela
-          const lastPipe = currentPipes[currentPipes.length - 1];
-          if (lastPipe && lastPipe.x < 400 && currentPipes.length < 3) {
+          if (currentPipes[currentPipes.length - 1]?.x < 400 && currentPipes.length < 3) {
             const height = Math.random() * 300 + 100;
             return [...currentPipes, { x: 800, height, passed: false }];
           }
@@ -148,37 +145,13 @@ export const FlappyBird = () => {
       </div>
 
       {/* Pássaro */}
-      <motion.div
-        className="absolute w-12 h-12 left-24 bg-autism-orange rounded-full"
-        style={{
-          top: birdPosition,
-          transition: 'none',
-        }}
-        animate={{ rotate: birdVelocity * 2 }}
-      >
-        <div className="absolute w-4 h-4 right-0 top-4 bg-autism-pink rounded-full" />
-        <div className="absolute w-6 h-4 right-[-8px] top-5 bg-autism-pink rounded-tr-full" />
-      </motion.div>
+      <Bird position={birdPosition} velocity={birdVelocity} />
 
       {/* Canos */}
       {pipes.map((pipe, index) => (
         <div key={index}>
-          <div
-            className="absolute w-20 bg-autism-green rounded-b-lg"
-            style={{
-              left: pipe.x,
-              height: pipe.height,
-              top: 0,
-            }}
-          />
-          <div
-            className="absolute w-20 bg-autism-green rounded-t-lg"
-            style={{
-              left: pipe.x,
-              top: pipe.height + PIPE_SPACING,
-              bottom: 0,
-            }}
-          />
+          <Pipe x={pipe.x} height={pipe.height} isTop={true} />
+          <Pipe x={pipe.x} height={600 - pipe.height - PIPE_SPACING} isTop={false} />
         </div>
       ))}
 
